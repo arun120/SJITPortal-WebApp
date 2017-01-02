@@ -222,7 +222,7 @@ $(document).ready(function(){
            <section class="landing">
                    
  <center>  
- <form  class="sky-form" method="post" action="../achievements">
+ <form  class="sky-form" method="post" action="../achievements" enctype="multipart/form-data">
     <header>Add Achievements</header>
     <fieldset>					
 	<section>
@@ -303,7 +303,16 @@ $(document).ready(function(){
                     QUANTITY / AMOUNT: </b></div>
                     <br>
                         <label class="input" name="desc">
-                            <input type="text" name="quantity">
+                           <input type="text" name="quantity">
+                    <br>
+                        </label>
+            </label>
+            <label class="input">
+                <div align="left" size="3px"><b>
+                    UPLOAD CERTIFICATE: </b></div>
+                    <br>
+                        <label class="file">
+                            <input type="file" name="file" />
                     <br>
                         </label>
             </label>
@@ -312,7 +321,7 @@ $(document).ready(function(){
         </section>
             
                            
-             <div align="left">
+             <div align="center">
                  <input type="submit" id="submit" value="Submit" onclick="call()"/></div>
             <br>
     </fieldset>

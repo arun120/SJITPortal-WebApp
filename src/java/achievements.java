@@ -4,22 +4,33 @@
  * and open the template in the editor.
  */
 
+import com.action.Base;
 import com.action.Find;
 import dbconnection.dbcon;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  *
  * @author Lenovo
  */
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 10, // 10 MB
+        maxFileSize = 1024 * 1024 * 50, // 50 MB
+        maxRequestSize = 1024 * 1024 * 100)      // 100 MB
+
 public class achievements extends HttpServlet {
 
     /**
@@ -60,6 +71,13 @@ public class achievements extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    private static final long serialVersionUID = 205242440643911308L;
+    
+    /**
+     * Directory where uploaded files will be saved, its relative to the web
+     * application directory.
+     */
+   
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -95,52 +113,86 @@ public class achievements extends HttpServlet {
         } finally {
             out.close();
         }
-        String category=request.getParameter("cat");
-        String colg=request.getParameter("colg");
-        String event=request.getParameter("event");
-        String date=request.getParameter("datepicker");
-        String pos=request.getParameter("pos");
-        String prize=request.getParameter("prize");
-        String quantity=request.getParameter("quantity");
+        
+        String name="";
+        String category="";
+        String colg="";
+        String event="";
+        String date="";
+        String pos="";
+        String prize="";
+        String quantity="";
+        String UPLOAD_DIRECTORY="hello";
         
         String roll=request.getSession().getAttribute("username").toString();       
         
        Connection con=null,con1=null;
        Statement stmt=null,stmt1=null;
+               if(ServletFileUpload.isMultipartContent(request)){
+            try {
+                
+                List<FileItem> multiparts = new ServletFileUpload(
+                                         new DiskFileItemFactory()).parseRequest(request);
+              
+                for(FileItem item : multiparts){
+                    if (item.isFormField()) {
+                        if (item.getFieldName().equals("cat")) {
+                            category = item.getString();
+                            // Do something with the value
+                        }
+                        if (item.getFieldName().equals("colg")) {
+                            colg = item.getString();
+                            // Do something with the value
+                        }
+                        if (item.getFieldName().equals("event")) {
+                            event = item.getString();
+                            // Do something with the value
+                        }
+                        if (item.getFieldName().equals("datepicker")) {
+                            date = item.getString();
+                            // Do something with the value
+                        }
+                        if (item.getFieldName().equals("pos")) {
+                            pos = item.getString();
+                            // Do something with the value
+                        }
+                        if (item.getFieldName().equals("prize")) {
+                            prize = item.getString();
+                            // Do something with the value
+                        }
+                        if (item.getFieldName().equals("quantity")) {
+                            quantity = item.getString();
+                            // Do something with the value
+                        }
+                     // if(!ayear.equals("")&&!dept.equals("")&&!batch.equals("")&&!sem.equals("")&&!subcode.equals("")&&!notes.equals(""))
+            {
+                UPLOAD_DIRECTORY = Base.path+"/";
+                File file = new File(UPLOAD_DIRECTORY);    
+                Boolean a = file.mkdirs();
+            }
+                    }   
+                    if(!item.isFormField()){
+                        name = new File(item.getName()).getName();
+                        
+                        item.write( new File(UPLOAD_DIRECTORY + File.separator + name));
+                    }
+                    
+                }         
+               //File uploaded successfully
+               request.setAttribute("message", "File Uploaded Successfully "+name );
+            } catch (Exception ex) {
+               request.setAttribute("message", "File Upload Failed due to " + ex +UPLOAD_DIRECTORY+ayear);
+            }           
+        }
+        else{
+            request.setAttribute("message",
+                                 "Sorry this Servlet only handles file upload request");
+        }
+               
+        //db conn 
+        
+    
        
-       try{
-              con=new dbcon().getConnection("cse");
-                stmt=con.createStatement();
-                con1=new dbcon().getConnection("login");
-                stmt1=con1.createStatement();
-                String sql="INSERT INTO `achievements` (`rollno`, `category`, `college`, `event`, `date`, `position`, `prize`, `quantity`) VALUES ('"+roll+"', '"+category+"', '"+colg+"', '"+event+"', '"+date+"', '"+pos+"', '"+prize+"', '"+quantity+"');";
-                stmt.executeUpdate(sql);
-                /*
-                ResultSet rs=stmt1.executeQuery(sql);
-                if(rs.next())
-                {
-                }else{
-                  response.sendRedirect("admin/staffdeleted.jsp?msg=Some Error Occured!!Staff Not Found");
-                }
-                */
-       }catch(Exception e)
-       {
-           e.printStackTrace();
-       }finally{
-            try{
-                if(stmt!=null)
-                    stmt.close();
-                if(con!=null)
-                    con.close();
-                if(stmt1!=null)
-                    stmt1.close();
-                if(con1!=null)
-                    con1.close();
-            
-                }catch(Exception e){
-                e.printStackTrace();
-                }
-       }
 
     }
 
