@@ -5,14 +5,19 @@
  */
 
 import com.action.Base;
+import static com.action.Base.path;
 import com.action.Find;
 import dbconnection.dbcon;
 import java.io.File;
+import java.io.FileInputStream;
+//import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+//import java.sql.ResultSet;
 import java.sql.Statement;
+//import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -97,24 +102,12 @@ public class achievements extends HttpServlet {
             throws ServletException, IOException {
         //processRequest(request, response);
         PrintWriter out=response.getWriter();
-        try {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet achievement</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet achievement</h1>");
-            out.println("<h1>Servlet achievement</h1>");
-            out.println("<h1>Servlet achievement</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        } finally {
-            out.close();
-        }
         
-        String name="";
+        
+        //String name="";
+        String fname = null;
+        int len=0;
+        String msg="";
         String category="";
         String colg="";
         String event="";
@@ -122,14 +115,15 @@ public class achievements extends HttpServlet {
         String pos="";
         String prize="";
         String quantity="";
-        String UPLOAD_DIRECTORY="hello";
+//        String UPLOAD_DIRECTORY="hello";
         
         String roll=request.getSession().getAttribute("username").toString();       
-        
-       Connection con=null,con1=null;
-       Statement stmt=null,stmt1=null;
+        String dept=Find.sdept(roll);
+       Connection con=null;
+       Statement stmt=null;
+       String path="achievements";
                if(ServletFileUpload.isMultipartContent(request)){
-            try {
+            try{
                 
                 List<FileItem> multiparts = new ServletFileUpload(
                                          new DiskFileItemFactory()).parseRequest(request);
@@ -165,45 +159,68 @@ public class achievements extends HttpServlet {
                             // Do something with the value
                         }
                      // if(!ayear.equals("")&&!dept.equals("")&&!batch.equals("")&&!sem.equals("")&&!subcode.equals("")&&!notes.equals(""))
-            {
-                UPLOAD_DIRECTORY = Base.path+"/";
-                File file = new File(UPLOAD_DIRECTORY);    
-                Boolean a = file.mkdirs();
-            }
-                    }   
-                    if(!item.isFormField()){
-                        name = new File(item.getName()).getName();
-                        
-                        item.write( new File(UPLOAD_DIRECTORY + File.separator + name));
+                    }else
+                    {
+                        if(item.getFieldName().equals("file")){
+                            fname=item.getName();
+                            if(!(item.getName().equals("")))
+                            {
+                                File f=new File(Base.path+File.separator+path+File.separator);
+                                
+                                f.mkdirs();
+                                
+                                item.write(new File(Base.path+File.separator+path+File.separator+fname));
+                                len=(int)new File(Base.path+File.separator+path+File.separator+fname).length();
+                            }
+                        }
                     }
-                    
-                }         
-               //File uploaded successfully
-               request.setAttribute("message", "File Uploaded Successfully "+name );
-            } catch (Exception ex) {
-               request.setAttribute("message", "File Upload Failed due to " + ex +UPLOAD_DIRECTORY+ayear);
-            }           
-        }
-        else{
-            request.setAttribute("message",
-                                 "Sorry this Servlet only handles file upload request");
-        }
-               
-        //db conn 
-        
-    
-       
+                }
+                con=new dbcon().getConnection(dept);
+                stmt=con.createStatement();
+                try{
+                    FileInputStream certificate=null;
+                    if(len!=0)
+                        certificate= new FileInputStream(Base.path+File.separator+path+File.separator+fname);
+                    String sql="INSERT INTO achievements (roll, category, colg, event, date, pos, prize, quantity, filename,certificate) "
+                            + "VALUES ('"+roll+"','"+category+"','"+colg+"','"+event+"','"+date+"','"+pos+"','"+prize+"','"+quantity+"','"+fname+"',?)";
+                    PreparedStatement pst= con.prepareStatement(sql);
+                    pst.setBinaryStream(1,certificate,len);
+                    pst.executeUpdate();
+                    msg="Successfully Submitted.";
+                    if(pst!=null)
+                        pst.close();
+                    if(con!=null)
+                        con.close();
+                    if(certificate!=null)
+                        certificate.close();
 
-    }
-
+                }catch(Exception e){
+                    e.printStackTrace();
+                    //e.printStackTrace(response.getWriter());
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            
+        try {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet achievement</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println(msg);
+            out.println("</body>");
+            out.println("</html>");
+        } finally {
+            out.close();
+        }
+               }}}
     /**
      * Returns a short description of the servlet.
      *
      * @return a String containing servlet description
      */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
-}
+    

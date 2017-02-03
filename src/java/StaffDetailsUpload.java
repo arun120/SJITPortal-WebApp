@@ -283,7 +283,6 @@ eaddr[Integer.parseInt(item.getFieldName().substring(5))]=item.getString();
                       if(!item.getName().equals(""))
                      {
                     item.write(new File(Base.path+File.separator+path+File.separator+ext2));
-                   
                     ext2l=(int)new File(Base.path+File.separator+path+File.separator+ext2).length();
                      }
                      }
