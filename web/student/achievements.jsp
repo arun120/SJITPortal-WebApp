@@ -154,7 +154,7 @@ $(document).ready(function(){
 		     	
                                   	
 					
-	
+                  
 		
 		<header id="page-header"  class="fixed-header">
 		
