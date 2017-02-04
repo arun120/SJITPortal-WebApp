@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+import General.AcademicYear;
 import com.action.Base;
 import static com.action.Base.path;
 import com.action.Find;
@@ -115,8 +115,8 @@ public class achievements extends HttpServlet {
         String pos="";
         String prize="";
         String quantity="";
-//        String UPLOAD_DIRECTORY="hello";
-        
+        String acyear = AcademicYear.getCurrentYear().getYearString();
+                
         String roll=request.getSession().getAttribute("username").toString();       
         String dept=Find.sdept(roll);
        Connection con=null;
@@ -181,8 +181,8 @@ public class achievements extends HttpServlet {
                     FileInputStream certificate=null;
                     if(len!=0)
                         certificate= new FileInputStream(Base.path+File.separator+path+File.separator+fname);
-                    String sql="INSERT INTO achievements (roll, category, colg, event, date, pos, prize, quantity, filename,certificate) "
-                            + "VALUES ('"+roll+"','"+category+"','"+colg+"','"+event+"','"+date+"','"+pos+"','"+prize+"','"+quantity+"','"+fname+"',?)";
+                    String sql="INSERT INTO achievements (roll, category, colg, event, date, pos, prize, quantity, filename,certificate,academicyear) "
+                            +"VALUES ('"+roll+"','"+category+"','"+colg+"','"+event+"','"+date+"','"+pos+"','"+prize+"','"+quantity+"','"+fname+"',?,'"+acyear+"')";
                     PreparedStatement pst= con.prepareStatement(sql);
                     pst.setBinaryStream(1,certificate,len);
                     pst.executeUpdate();

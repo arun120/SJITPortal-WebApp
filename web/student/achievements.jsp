@@ -72,11 +72,22 @@
 <script src="../js/angulartab.js"></script>
 <script>
 $(document).ready(function(){
-             $(document).on('change keyup','#prize',function(){
+        $(document).on('change keyup','#prize',function(){
                if($("#prize option:selected").val()==="others"){
-                   $("#prize").after('<input type="text" name="prize">');
+                   $("#prize").after('<input type="text" name="prize" value="Enter Prize">');
                    $("#prize").remove();
                    $("#lableprize").attr('class','input');
+               }
+            });
+        });
+</script>
+<script>        
+$(document).ready(function(){
+        $(document).on('change keyup','#cat',function(){
+               if($("#cat option:selected").val()==="Others"){
+                   $("#cat").after('<input type="text" name="cat" value="Enter Category">');
+                   $("#cat").remove();
+                   $("#lablecat").attr('class','input');
                }
             });
         });
@@ -223,7 +234,7 @@ $(document).ready(function(){
                    
  <center>  
  <form  class="sky-form" method="post" action="../achievements" enctype="multipart/form-data">
-    <header>Add Achievements</header>
+    <header>Add Co-curricular Activity</header>
     <fieldset>					
 	<section>
             <label class="input">
@@ -231,11 +242,14 @@ $(document).ready(function(){
                     CATEGORY:  </b></div>
                     <br>
                         <label class="select">
-                            <select id="cat" name="cat" >
+                            <select id="cat" name="cat" required>
                                 <option value="Symposium">Symposium</option>
                                 <option value="Hackathon">Hackathon</option>
                                 <option value="Conference">Conference</option>
+                                <option value="Seminar">Seminar</option>
+                                <option value="Workshop">Workshop</option>
                                 <option value="Others">Others</option>
+                                
                             </select>
                                 <i></i>
                                 <br>
@@ -248,7 +262,7 @@ $(document).ready(function(){
                     COLLEGE NAME: </b></div>
                     <br>
                         <label class="input" name="desc">
-                            <input type="text" name="colg">
+                            <input type="text" name="colg" required>
                     <br>
                         </label>
             </label>
@@ -257,16 +271,16 @@ $(document).ready(function(){
                     EVENT NAME: </b></div>
                     <br>
                         <label class="input" name="desc">
-                            <input type="text" name="event">
+                            <input type="text" name="event" required>
                     <br>
                         </label>
             </label>
             <label class="input">
                 <div align="left" size="3px" id="div7"><b>
-                    DATE:  </b></div>
+                    DATE OF EVENT:  </b></div>
                 <br>
                         <label class="input">
-                        <input type="date" id="datepicker" placeholder="yyyy/mm/dd" name="datepicker" />
+                        <input type="date" id="datepicker" placeholder="yyyy/mm/dd" name="datepicker" required/>
                          <i></i>
                          <br>
                         </label>
@@ -276,7 +290,7 @@ $(document).ready(function(){
                     POSITION:  </b></div>
                     <br>
                         <label class="select">
-                            <select id="pos" name="pos" >
+                            <select id="pos" name="pos" required>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -290,7 +304,7 @@ $(document).ready(function(){
                     PRIZE:  </b></div>
                     <br>
                         <label id="lableprize" class="select">
-                            <select name="prize" id="prize">
+                            <select name="prize" id="prize" required>
                                 <option value="cash">Cash Prize</option>
                                 <option value="others">Other Prizes</option>
                             </select>
@@ -303,7 +317,7 @@ $(document).ready(function(){
                     QUANTITY / AMOUNT: </b></div>
                     <br>
                         <label class="input" name="desc">
-                           <input type="text" name="quantity">
+                           <input type="text" name="quantity" required>
                     <br>
                         </label>
             </label>
@@ -312,7 +326,7 @@ $(document).ready(function(){
                     UPLOAD CERTIFICATE: </b></div>
                     <br>
                         <label class="file">
-                            <input type="file" name="file" />
+                            <input type="file" name="file" required/>
                     <br>
                         </label>
             </label>
