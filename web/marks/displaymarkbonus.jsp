@@ -268,11 +268,12 @@ and open the template in the editor.
                                         total=0;
                                     
                                     show=true;
-                                }
+                                
                                 if (bonus != 0) {
-
+                                        if(!mark.equals("A"))    
                                         total+=10;
                                     
+                                }
                                 }
                                     total*=5;
                                     

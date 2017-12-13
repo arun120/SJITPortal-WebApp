@@ -64,12 +64,7 @@ public class MarkResource {
         String rollno,sem;
         List<Mark> mlist=new ArrayList<Mark>();
         JSONParser parse=new JSONParser();
-        if(headers.getRequestHeader("Content-Type")==null || !headers.getRequestHeader("Content-Type").get(0).equals("application/json")){
-            return new Error(100).toJson();
-        }
-       if(headers.getRequestHeader("api-key")==null || !Authenticate.validateAPI(headers.getRequestHeader("api-key").get(0)) ){
-            return new Error(200).toJson();
-        }
+        
         try {
             JSONObject json=(JSONObject) parse.parse(body);
             rollno=(String) json.get("rollno");
