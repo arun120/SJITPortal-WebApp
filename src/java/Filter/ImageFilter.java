@@ -111,7 +111,7 @@ public class ImageFilter implements Filter {
         return;
         }
             String username=req.getSession().getAttribute("username").toString();
-            System.out.println(username);
+            log(username);
             Authenticate a=new Authenticate();
             a.setUsername(username);
             a.setPassword(a.findPassword());
@@ -119,7 +119,7 @@ public class ImageFilter implements Filter {
             if(a.isAuthenticated()){
                 if(a.getType().equals("student")||a.getType().equals("staff")){
                     String reqId=req.getRequestURL().substring(req.getRequestURL().lastIndexOf("/")+1,req.getRequestURL().lastIndexOf("."));
-                    if(!reqId.toLowerCase().equals(username))
+                    if(!reqId.toLowerCase().equals(username.toLowerCase()))
                        ((HttpServletResponse)response).sendRedirect(req.getContextPath());
                 }
             }
