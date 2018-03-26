@@ -17,28 +17,27 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  *
  * @author Fluffy
  */
-public class ImageFilter implements Filter {
+public class RESTfulFilter implements Filter {
     
-    private static final boolean debug = false;
+    private static final boolean debug = true;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
     
-    public ImageFilter() {
+    public RESTfulFilter() {
     }    
     
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
-            log("ImageFilter:DoBeforeProcessing");
+            log("RESTfulFilter:DoBeforeProcessing");
         }
 
         // Write code here to process the request and/or response before
@@ -66,7 +65,7 @@ public class ImageFilter implements Filter {
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
-            log("ImageFilter:DoAfterProcessing");
+            log("RESTfulFilter:DoAfterProcessing");
         }
 
         // Write code here to process the request and/or response after
@@ -102,29 +101,22 @@ public class ImageFilter implements Filter {
             throws IOException, ServletException {
         
         if (debug) {
-            log("ImageFilter:doFilter()");
+            log("RESTfulFilter:doFilter()");
         }
         
-        HttpServletRequest req=(HttpServletRequest)request;
-        if(req.getSession().getAttribute("username")==null){
-            ((HttpServletResponse)response).sendRedirect(req.getContextPath());
-        return;
-        }
-            String username=req.getSession().getAttribute("username").toString();
-            log(username);
-            Authenticate a=new Authenticate();
-            a.setUsername(username);
-            a.setPassword(a.findPassword());
-            
-            if(a.isAuthenticated()){
-                if(a.getType().equals("student")||a.getType().equals("staff")){
-                    String reqId=req.getRequestURL().substring(req.getRequestURL().lastIndexOf("/")+1,req.getRequestURL().lastIndexOf("."));
-                    if(!reqId.toLowerCase().equals(username.toLowerCase()))
-                       ((HttpServletResponse)response).sendRedirect(req.getContextPath());
-                }
-            }
         doBeforeProcessing(request, response);
-        
+        String content=((HttpServletRequest)request).getHeader("Content-Type");
+        String APIkey=((HttpServletRequest)request).getHeader("api-key");
+        if(content==null || !content.equals("application/json")){
+            response.setContentType("application/json");
+            response.getWriter().print(new General.Error(100).toJson());
+            return ;
+        }
+       if(APIkey==null || !Authenticate.validateAPI(APIkey) ){
+            response.setContentType("application/json");
+            response.getWriter().print(new General.Error(200).toJson());
+            return ;
+        }
         Throwable problem = null;
         try {
             chain.doFilter(request, response);
@@ -180,7 +172,7 @@ public class ImageFilter implements Filter {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
             if (debug) {                
-                log("ImageFilter:Initializing filter");
+                log("RESTfulFilter:Initializing filter");
             }
         }
     }
@@ -191,9 +183,9 @@ public class ImageFilter implements Filter {
     @Override
     public String toString() {
         if (filterConfig == null) {
-            return ("ImageFilter()");
+            return ("RESTfulFilter()");
         }
-        StringBuffer sb = new StringBuffer("ImageFilter(");
+        StringBuffer sb = new StringBuffer("RESTfulFilter(");
         sb.append(filterConfig);
         sb.append(")");
         return (sb.toString());
@@ -244,8 +236,7 @@ public class ImageFilter implements Filter {
     }
     
     public void log(String msg) {
-        filterConfig.getServletContext().log(msg);
-        System.out.println(msg);
+        filterConfig.getServletContext().log(msg);        
     }
     
 }
